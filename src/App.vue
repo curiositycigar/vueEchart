@@ -6,27 +6,27 @@
           <Submenu name="1">
             <template slot="title">
               <Icon type="ios-navigate"></Icon>
-               组一
+               chart图
             </template>
             <Menu-item name="1-1">折线图</Menu-item>
             <Menu-item name="1-2">柱状图</Menu-item>
-            <Menu-item name="1-3">选项 3</Menu-item>
+            <Menu-item name="1-3">排序</Menu-item>
           </Submenu>
           <Submenu name="2">
             <template slot="title">
               <Icon type="ios-keypad"></Icon>
-              组二
+              gl图
             </template>
-            <Menu-item name="2-1">选项 1</Menu-item>
-            <Menu-item name="2-2">选项 2</Menu-item>
+            <Menu-item name="2-1">柱状图</Menu-item>
+            <Menu-item name="2-2">面积图</Menu-item>
           </Submenu>
           <Submenu name="3">
             <template slot="title">
               <Icon type="ios-analytics"></Icon>
-              组三
+              D3
             </template>
-            <Menu-item name="3-1">选项 1</Menu-item>
-            <Menu-item name="3-2">选项 2</Menu-item>
+            <Menu-item name="3-1">柱状图</Menu-item>
+            <Menu-item name="3-2">折线图</Menu-item>
           </Submenu>
         </Menu>
       </i-col>

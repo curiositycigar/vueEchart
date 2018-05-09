@@ -1,6 +1,6 @@
 <template>
   <div>
-    <e-chart name="chart" :options="options"/>
+    <e-chart height="calc(100vh - 130px)" name="chart" :options="options"/>
   </div>
 </template>
 
@@ -27,11 +27,16 @@
             data: [820, 932, 901, 934, 1290, 1330, 1320],
             type: 'line'
           }]
-        }
+        },
+        interval: null
       }
     },
+    beforeRouteLeave(from, to, next) {
+      clearInterval(this.interval)
+      next()
+    },
     mounted() {
-      window.setInterval(() => {
+      this.interval = setInterval(() => {
         this.options = {
           title: {
             left: 'center',

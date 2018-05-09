@@ -1,6 +1,6 @@
 <template>
   <div>
-    <e-chart name="chart" :options="options"/>
+    <e-chart height="calc(100vh - 130px)" name="chart" :options="options"/>
   </div>
 </template>
 
@@ -92,11 +92,16 @@
               data: [620, 732, 701, 734, 1090, 1130, 1120]
             }
           ]
-        }
+        },
+        interval: null
       }
     },
+    beforeRouteLeave(from, to, next) {
+      clearInterval(this.interval)
+      next()
+    },
     mounted() {
-      window.setInterval(() => {
+      this.interval = setInterval(() => {
         this.options = {
           title: {
             text: '柱状图'

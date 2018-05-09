@@ -6,6 +6,7 @@
 
 <script>
   import echarts from 'echarts'
+  import 'echarts-gl'
 
   export default {
     name: 'echart',

@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import NotFound from '@/components/notFound'
-import HelloWorld from '@/components/HelloWorld'
 import E11 from '@/components/E11'
 import E12 from '@/components/E12'
 import E13 from '@/components/E13'
+import E21 from '@/components/E21'
+import E22 from '@/components/E22'
+import E31 from '@/components/E31'
+import E32 from '@/components/E32'
 
 Vue.use(Router)
 
@@ -32,22 +35,22 @@ export default new Router({
     {
       path: '/2-1',
       name: '2-1',
-      component: HelloWorld
+      component: E21
     },
     {
       path: '/2-2',
       name: '2-2',
-      component: HelloWorld
+      component: E22
     },
     {
       path: '/3-1',
       name: '3-1',
-      component: HelloWorld
+      component: E31
     },
     {
       path: '/3-2',
       name: '3-2',
-      component: HelloWorld
+      component: E32
     },
     {
       path: '*',
