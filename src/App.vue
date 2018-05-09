@@ -6,7 +6,7 @@
           <Submenu name="1">
             <template slot="title">
               <Icon type="ios-navigate"></Icon>
-               chart图
+              chart图
             </template>
             <Menu-item name="1-1">折线图</Menu-item>
             <Menu-item name="1-2">柱状图</Menu-item>
@@ -50,8 +50,16 @@
 </template>
 
 <script>
+
+  import {Row, Menu, Submenu, MenuItem, Icon, Breadcrumb, BreadcrumbItem, Col} from 'iview'
+  //  import Vue from 'vue'
+  //  Vue.component('Button', Button)
+
   export default {
     name: 'App',
+    components: {
+      Row, iCol: Col, Menu, Submenu, MenuItem, Icon, Breadcrumb, BreadcrumbItem
+    },
     data() {
       return {
         active: '1-1'
