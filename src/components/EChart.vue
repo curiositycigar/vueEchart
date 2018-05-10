@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :style="{width:width,height:height}" :ref="name"></div>
+    <div class="123456768" :style="{width:width,height:height}" :ref="name"></div>
   </div>
 </template>
 
