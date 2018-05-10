@@ -59,12 +59,13 @@
           .append('g')
           .attr('transform', (d, i) => `translate(${i * barWidth}, 0)`)
           .merge(bar)
+        bar.exit().remove()
 
         chart.attr('width', width + 40)
           .attr('height', height + 40).append('g')
           .attr('transform', 'translate(20,20)')
 
-        let rect = bar.append('rect')
+        bar.append('rect')
           .attr('y', height)
           .attr('height', 0)
           .attr('width', barWidth - 1)
