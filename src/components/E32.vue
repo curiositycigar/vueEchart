@@ -2,17 +2,7 @@
   <div>
     <svg id="e32"></svg>
     <svg id="e321"></svg>
-    <table>
-      <thead>
-      <tr><td>  A</td><td>  B</td><td>  C</td><td>  D</td></tr>
-      </thead>
-      <tbody>
-      <tr><td>  0</td><td>  1</td><td>  2</td><td>  3</td></tr>
-      <tr><td>  4</td><td>  5</td><td>  6</td><td>  7</td></tr>
-      <tr><td>  8</td><td>  9</td><td> 10</td><td> 11</td></tr>
-      <tr><td> 12</td><td> 13</td><td> 14</td><td> 15</td></tr>
-      </tbody>
-    </table>
+    <div id="e322"></div>
   </div>
 </template>
 
@@ -23,34 +13,35 @@
     name: 'e32',
     data() {
       return {
-        options: {}
+        options: {},
+        data: [
+          {name: 'A', value: 1},
+          {name: 'B', value: 3},
+          {name: 'C', value: 5},
+          {name: 'D', value: 9},
+          {name: 'E', value: 3},
+          {name: 'F', value: 2},
+          {name: 'G', value: 6},
+          {name: 'H', value: 8},
+          {name: 'I', value: 3.4},
+          {name: 'J', value: 10},
+          {name: 'K', value: 5},
+          {name: 'L', value: 2},
+          {name: 'M', value: 6},
+          {name: 'N', value: 8},
+          {name: 'O', value: 3},
+          {name: 'P', value: 10},
+          {name: 'Q', value: 5}
+        ]
       }
     },
     mounted() {
-//      let data = [
-//        {name: 'A', value: 1},
-//        {name: 'B', value: 3},
-//        {name: 'C', value: 5},
-//        {name: 'D', value: 9},
-//        {name: 'E', value: 3},
-//        {name: 'F', value: 2},
-//        {name: 'G', value: 6},
-//        {name: 'H', value: 8},
-//        {name: 'I', value: 3},
-//        {name: 'J', value: 10},
-//        {name: 'K', value: 5},
-//        {name: 'L', value: 2},
-//        {name: 'M', value: 6},
-//        {name: 'N', value: 8},
-//        {name: 'O', value: 3},
-//        {name: 'P', value: 10},
-//        {name: 'Q', value: 5}
-//      ]
+      let data = this.data
 
-//      let chart = d3.select('#e32')
-//      chart.append('g')
-//      this.update(chart, data.map(item => Object.assign(item, {value: Math.round(Math.random() * 9)})), document.querySelector('#e32').parentNode.offsetWidth)
-//
+      let chart = d3.select('#e32')
+      chart.append('g')
+      this.update(chart, data)
+
       let strData = 'abcdefghijklmnopqrstuvwxyz'.split('')
       let str = d3.select('#e321')
       str.append('g')
@@ -58,6 +49,49 @@
 //      d3.interval(() => {
 //        this.updateStr(str, d3.shuffle(strData).slice(0, Math.random() * 26))
 //      }, 1000)
+
+      let data2 = [3, 7, 9, 1, 4, 6, 8, 2, 5]
+      let w = 700
+      let h = 300
+      let max = d3.max(data2)
+
+      let x = d3.scaleLinear().domain([0, data2.length - 1]).range([0, w])
+      let y = d3.scaleLinear().domain([0, max]).range([h, 0])
+
+      let vis = d3.select('#e322')
+        .append('svg:svg')
+        .attr('width', w)
+        .attr('height', h)
+
+      vis.selectAll('path.line')
+        .data([data2])
+        .enter().append('svg:path')
+        .attr('fill', '#fff')
+        .attr('stroke', '#000')
+        .attr('d', d3.line()
+          .x((d, i) => x(i))
+          .y(y))
+
+      let ticks = vis.selectAll('.tick')
+        .data(y.ticks(7))
+        .enter().append('svg:g')
+        .attr('transform', (d) => `translate(0, ${y(d)})`)
+        .attr('class', 'tick')
+
+      ticks.append('svg:line')
+        .attr('stroke', '#aaa')
+        .attr('y1', 0)
+        .attr('y2', 0)
+        .attr('x1', 0)
+        .attr('x2', w)
+
+      ticks.append('svg:text')
+        .style('color', '#aaa')
+        .text((d) => d)
+        .attr('text-anchor', 'end')
+        .attr('dy', 2)
+        .attr('dx', 4)
+
       window.d3 = d3
     },
     methods: {
@@ -115,12 +149,18 @@
         bar.exit().remove()
 
         bar.append('rect')
+          .style('cursor', 'pointer')
           .attr('y', height)
           .attr('height', 0)
-          .attr('width', barWidth - 1)
+          .attr('width', barWidth)
           .transition('ease')
           .attr('y', d => y(d.value))
           .attr('height', d => height - y(d.value))
+
+        bar.append('line')
+          .style('stroke', '#fff')
+          .attr('x2', (d, i) => i * barWidth)
+          .attr('y2', 0)
 
         bar.append('text')
           .attr('x', x.step() / 2)
@@ -144,7 +184,12 @@
 
 <style>
   #e32 rect {
+    transition: all .3s;
     fill: steelblue;
+  }
+
+  #e32 rect:hover {
+    fill: #0000ff;
   }
 
   #e32 text {
