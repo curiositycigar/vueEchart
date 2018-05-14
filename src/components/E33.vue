@@ -21,7 +21,8 @@
             name: 'box first',
             data: [
               {id: 'bf1', name: 'bf-1'},
-              {id: 'bf2', name: 'bf-2'}
+              {id: 'bf2', name: 'bf-2'},
+              {id: 'bf3', name: 'bf-3'}
             ]
           },
           {
@@ -44,6 +45,10 @@
     },
     methods: {
       draw(field, data, w = 600, margin = 40) {
+        // let boxes = [
+        //   {name: 'name1', type: 1},
+        //   {name: 'name2', type: 2}
+        // ]
         let swimHeight = 200
         let width = w - margin
         let height = data.boxes.length * swimHeight
@@ -73,8 +78,16 @@
         let assets = swim.selectAll('.asset').data(d => d.data)
         assets.enter().append('circle')
           .attr('r', '5')
-          .attr('cx', (d, i) => i * 200)
-          .attr('cy', swimHeight / 2)
+          .attr('cx', (d, i, k) => {
+            let step = w / k.length
+            d.cx = step * (i + 0.5)
+            return d.cx
+          })
+          .attr('cy', (d) => {
+            d.cy = swimHeight / 2
+            return d.cy
+          })
+        console.log(data)
       }
     }
   }

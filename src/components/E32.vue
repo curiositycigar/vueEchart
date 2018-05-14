@@ -43,9 +43,9 @@
       chart.append('g')
       this.update(chart, data)
 //      this.update(chart, data.map(item => Object.assign({}, item, {value: Math.ceil(Math.random() * 6) + 1})))
-//      d3.interval(() => {
-//        this.update(chart, data.map(item => Object.assign({}, item, {value: Math.ceil(Math.random() * 6) + 1})).slice(0, Math.floor(Math.random() * data.length - 3) + 3))
-//      }, 1500)
+      d3.interval(() => {
+        this.update(chart, data.map(item => Object.assign({}, item, {value: (Math.random() * 6).toFixed(2) + 1})).slice(0, Math.floor(Math.random() * (data.length - 3)) + 3))
+      }, 1500)
 
       let data2 = [3, 7, 9, 1, 4, 6, 8, 2, 5]
       let w = 700
@@ -141,6 +141,7 @@
           .attr('r', 6)
       },
       update(wrapper, data, width = 600, height = 400) {
+        let margin = 60
         let barWidth = width / data.length
         let y = d3.scaleLinear()
           .domain([0, d3.max(data.map(item => item.value))])
@@ -149,15 +150,16 @@
           .domain(data.map(item => item.name))
           .range([0, width])
 
-        let chart = wrapper.attr('width', width + 40)
-          .attr('height', height + 40).select('g')
-          .attr('transform', 'translate(20,20)')
+        let chart = wrapper.attr('width', width + margin)
+          .attr('height', height + margin).select('g')
+          .attr('transform', `translate(${margin / 2},${margin / 2})`)
 
         let bar = chart.selectAll('g.bar').data(data)
         bar.enter().append('g').attr('class', 'bar')
 
-        bar.exit().transition().style('opacity', 0).remove()
-        bar = chart.selectAll('g.bar').attr('transform', (d, i) => `translate(${i * barWidth}, 0)`)
+        bar.exit().remove()
+        bar = chart.selectAll('g.bar')
+        bar.transition().attr('transform', (d, i) => `translate(${i * barWidth}, 0)`)
 
         let rect = bar.selectAll('rect').data(d => [d]).attr('class', 'rect')
         rect.enter().append('rect')
@@ -176,23 +178,32 @@
           .attr('height', d => height - y(d.value))
 
         let text = bar.selectAll('text').data(d => [d])
-        text.enter().append('text')
-        bar.selectAll('text')
+        text.enter().append('text').attr('y', height - 10)
           .transition('ease')
-          .attr('x', x.step() / 2)
-          .attr('y', d => y(d.value) + 3)
+          .attr('x', x.step() * 0.9 / 2)
           .attr('dy', '.75em')
+          .attr('y', d => y(d.value) - 10)
+        bar.selectAll('text')
           .text(d => d.value)
+          .attr('x', x.step() * 0.9 / 2)
+          .attr('dy', '.75em')
+          .transition('ease')
+          .attr('y', d => y(d.value) - 10)
 
         chart.selectAll('.axis').exit().remove('.axis')
-        chart.append('g')
-          .attr('class', 'x axis')
+        let xaxis = chart.selectAll('.x').data([1])
+        xaxis.enter().append('g').attr('class', 'x axis')
+
+        chart.selectAll('.x')
           .attr('transform', `translate(0, ${height})`)
+          .transition()
           .call(d3.axisBottom(x))
 
-        chart.append('g')
-          .attr('class', 'y axis')
+        let yaxis = chart.selectAll('.y').data([1])
+        yaxis.enter().append('g').attr('class', 'y axis')
+        chart.selectAll('.y')
           .attr('transform', `translate(0, 0)`)
+          .transition()
           .call(d3.axisLeft(y))
       }
     }
@@ -210,14 +221,15 @@
   }
 
   #e32 text {
-    fill: white;
+    fill: #000;
     font: 10px sans-serif;
-    text-anchor: end;
+    text-anchor: middle;
   }
 
   #e32 .axis text {
     font: 10px sans-serif;
     fill: #000;
+    text-anchor: end;
   }
 
   .axis path,
