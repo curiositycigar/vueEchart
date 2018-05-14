@@ -3,6 +3,7 @@
     <svg id="e32"></svg>
     <svg id="e321"></svg>
     <div id="e322"></div>
+    <div id='root'></div>
   </div>
 </template>
 
@@ -41,88 +42,103 @@
       let chart = d3.select('#e32')
       chart.append('g')
       this.update(chart, data)
-
-      let strData = 'abcdefghijklmnopqrstuvwxyz'.split('')
-      let str = d3.select('#e321')
-      str.append('g')
-      this.updateStr(str, strData)
+//      this.update(chart, data.map(item => Object.assign({}, item, {value: Math.ceil(Math.random() * 6) + 1})))
 //      d3.interval(() => {
-//        this.updateStr(str, d3.shuffle(strData).slice(0, Math.random() * 26))
-//      }, 1000)
+//        this.update(chart, data.map(item => Object.assign({}, item, {value: Math.ceil(Math.random() * 6) + 1})).slice(0, Math.floor(Math.random() * data.length - 3) + 3))
+//      }, 1500)
 
       let data2 = [3, 7, 9, 1, 4, 6, 8, 2, 5]
       let w = 700
       let h = 300
-      let max = d3.max(data2)
 
-      let x = d3.scaleLinear().domain([0, data2.length - 1]).range([0, w])
-      let y = d3.scaleLinear().domain([0, max]).range([h, 0])
-
-      let vis = d3.select('#e322')
+      let chart2 = d3.select('#e322')
         .append('svg:svg')
+        .attr('width', w + 40)
+        .attr('height', h + 40)
+      let vis = chart2.append('svg:g')
         .attr('width', w)
         .attr('height', h)
-
-      vis.selectAll('path.line')
-        .data([data2])
-        .enter().append('svg:path')
-        .attr('fill', '#fff')
-        .attr('stroke', '#000')
-        .attr('d', d3.line()
-          .x((d, i) => x(i))
-          .y(y))
-
-      let ticks = vis.selectAll('.tick')
-        .data(y.ticks(7))
-        .enter().append('svg:g')
-        .attr('transform', (d) => `translate(0, ${y(d)})`)
-        .attr('class', 'tick')
-
-      ticks.append('svg:line')
-        .attr('stroke', '#aaa')
-        .attr('y1', 0)
-        .attr('y2', 0)
-        .attr('x1', 0)
-        .attr('x2', w)
-
-      ticks.append('svg:text')
-        .style('color', '#aaa')
-        .text((d) => d)
-        .attr('text-anchor', 'end')
-        .attr('dy', 2)
-        .attr('dx', 4)
+        .attr('transform', 'translate(20,20)')
+      this.updateLine(vis, data2, w, h)
+//      d3.interval(() => {
+//        this.updateLine(vis, [...new Array(Math.floor(Math.random() * 5) + 5)].map(() => Math.random() * 5), w, h)
+//      }, 1500)
 
       window.d3 = d3
     },
     methods: {
-      updateStr(chart, data, width = 600, height = 400) {
-        let t = d3.transition().duration(700)
-        chart.attr('width', width)
-          .attr('height', height)
-        let body = chart.select('g').attr('transform', `translate(32,${height / 2})`)
-        let text = body.selectAll('text').data(data)
+      updateLine(vis, data2, w, h) {
+//        let max = d3.max(data2)
+        let x = d3.scaleLinear().domain([0, data2.length - 1]).range([0, w])
+        let y = d3.scaleLinear().domain([0, 11]).range([h, 0])
+        let path = vis.selectAll('path.line')
+          .data([data2])
 
-        text.exit()
-          .attr('class', 'exit')
-          .transition(t)
-          .attr('y', 60)
-          .style('fill-opacity', 1e-6)
-          .remove()
+        path.enter().append('svg:path')
+          .attr('class', 'line')
+        path.exit().remove()
 
-        text.attr('class', 'update')
-          .attr('y', 0)
-          .style('fill-opacity', 1)
-          .transition(t)
-          .attr('x', (d, i) => i * 32)
+        vis.selectAll('path.line')
+          .transition()
+          .attr('fill', 'rgba(0,0,0,0)')
+          .attr('stroke', '#000')
+          .attr('d', d3.line()
+            .x((d, i) => x(i))
+            .y(y))
 
-        text.enter().append('text')
-          .attr('class', 'enter')
-          .attr('x', (d, i) => i * 32)
-          .attr('y', -60)
-          .attr('dy', '.35em')
-          .text(d => d)
-          .transition(t)
-          .attr('y', 0)
+        let yticks = vis.selectAll('.ticky')
+          .data(y.ticks())
+          .enter().append('svg:g')
+          .attr('transform', (d) => `translate(0, ${y(d)})`)
+          .attr('class', 'ticky')
+
+        yticks.append('svg:line')
+          .attr('stroke', '#aaa')
+          .attr('y1', 0)
+          .attr('y2', 0)
+          .attr('x1', 0)
+          .attr('x2', w)
+
+        yticks.append('svg:text')
+          .style('color', '#aaa')
+          .text((d) => d)
+          .attr('text-anchor', 'end')
+          .attr('dy', 2)
+          .attr('dx', -8)
+
+        let xticks = vis.selectAll('.tickx').data(x.ticks())
+
+        xticks.enter().append('svg:g')
+          .attr('class', 'tickx')
+
+        xticks = vis.selectAll('.tickx').attr('transform', (d) => `translate(${x(d)}, 0)`)
+
+        let xline = xticks.selectAll('line').data(d => [d])
+        xline.enter().append('svg:line')
+        xticks.selectAll('line')
+          .transition()
+          .attr('stroke', '#aaa')
+          .attr('y1', 0)
+          .attr('y2', h)
+          .attr('x1', 0)
+          .attr('x2', 0)
+
+        let xtext = xticks.selectAll('text').data(d => [d])
+        xtext.enter().append('svg:text')
+        xticks.selectAll('text')
+          .transition()
+          .style('color', '#aaa')
+          .text((d) => d)
+          .attr('text-anchor', 'end')
+          .attr('dy', h + 16)
+          .attr('dx', 2)
+
+        let point = vis.selectAll('.point').data(data2)
+        point.enter().append('svg:circle')
+          .attr('class', 'point')
+        vis.selectAll('.point').attr('cx', (d, i) => x(i))
+          .attr('cy', y)
+          .attr('r', 6)
       },
       update(wrapper, data, width = 600, height = 400) {
         let barWidth = width / data.length
@@ -137,44 +153,45 @@
           .attr('height', height + 40).select('g')
           .attr('transform', 'translate(20,20)')
 
-        let oldBar = chart.selectAll('g').data(data)
+        let bar = chart.selectAll('g.bar').data(data)
+        bar.enter().append('g').attr('class', 'bar')
 
-        oldBar.attr('class', 'update')
+        bar.exit().transition().style('opacity', 0).remove()
+        bar = chart.selectAll('g.bar').attr('transform', (d, i) => `translate(${i * barWidth}, 0)`)
 
-        let bar = oldBar.enter().append('g').attr('class', 'enter')
-          .merge(oldBar)
-
-        bar.attr('transform', (d, i) => `translate(${i * barWidth}, 0)`)
-          .merge(bar)
-        bar.exit().remove()
-
-        bar.append('rect')
-          .style('cursor', 'pointer')
-          .attr('y', height)
+        let rect = bar.selectAll('rect').data(d => [d]).attr('class', 'rect')
+        rect.enter().append('rect')
           .attr('height', 0)
-          .attr('width', barWidth)
+          .attr('y', height)
+          .attr('width', barWidth * 0.9)
+          .transition('ease')
+          .attr('y', d => y(d.value))
+          .attr('height', d => height - y(d.value))
+          .attr('class', 'enter')
+        bar.selectAll('rect.rect')
+          .style('cursor', 'pointer')
+          .attr('width', barWidth * 0.9)
           .transition('ease')
           .attr('y', d => y(d.value))
           .attr('height', d => height - y(d.value))
 
-        bar.append('line')
-          .style('stroke', '#fff')
-          .attr('x2', (d, i) => i * barWidth)
-          .attr('y2', 0)
-
-        bar.append('text')
+        let text = bar.selectAll('text').data(d => [d])
+        text.enter().append('text')
+        bar.selectAll('text')
+          .transition('ease')
           .attr('x', x.step() / 2)
           .attr('y', d => y(d.value) + 3)
           .attr('dy', '.75em')
           .text(d => d.value)
 
+        chart.selectAll('.axis').exit().remove('.axis')
         chart.append('g')
           .attr('class', 'x axis')
           .attr('transform', `translate(0, ${height})`)
           .call(d3.axisBottom(x))
 
         chart.append('g')
-          .attr('class', 'x axis')
+          .attr('class', 'y axis')
           .attr('transform', `translate(0, 0)`)
           .call(d3.axisLeft(y))
       }
@@ -224,5 +241,16 @@
 
   #e321 .exit {
     fill: brown;
+  }
+
+  circle.point {
+    fill: #fff;
+    stroke: #000;
+    transition: all .2s;
+    cursor: pointer;
+  }
+
+  circle.point:hover {
+    stroke-width: 3px;
   }
 </style>
