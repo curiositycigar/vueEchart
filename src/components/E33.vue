@@ -18,16 +18,16 @@
       // 测试
       let data = {
         boxes: [
-          {id: '1', name: 'bf-1', type: 1},
-          {id: '2', name: 'bf-2', type: 2},
-          {id: '3', name: 'bf-3', type: 2},
-          {id: '4', name: 'bs-1', type: 2},
-          {id: '5', name: 'bs-2', type: 3},
-          {id: '8', name: 'bs-8', type: 3},
-          {id: '41', name: 'bs-8', type: 4},
-          {id: '6', name: 'bs-2', type: 5},
-          {id: '7', name: 'bs-2', type: 5},
-          {id: '9', name: 'bs-2', type: 5}
+          {id: '1', name: '黑猩猩队长', type: 1},
+          {id: '2', name: '孙悟空', type: 2},
+          {id: '3', name: '龟仙人', type: 2},
+          {id: '4', name: '比克大魔王', type: 2},
+          {id: '5', name: '汤姆', type: 3},
+          {id: '8', name: '杰瑞', type: 3},
+          {id: '41', name: '林冲', type: 4},
+          {id: '6', name: '猪八戒', type: 5},
+          {id: '7', name: '唐僧', type: 5},
+          {id: '9', name: '沙悟净', type: 5}
         ],
         rel: [
           {from: '1', to: '2', text: 'to'},
@@ -66,11 +66,11 @@
     methods: {
       draw(field, data, w = 600, margin = 40) {
         let boxes = [
-          {name: 'name1', type: 1},
-          {name: 'name2', type: 2},
-          {name: 'name3', type: 3},
-          {name: 'name4', type: 4},
-          {name: 'name5', type: 5}
+          {name: '超能勇士', type: 1},
+          {name: '龙珠', type: 2},
+          {name: '猫和老鼠', type: 3},
+          {name: '水浒传', type: 4},
+          {name: '西游记', type: 5}
         ]
         let nodes = {}
         data.boxes.map(item => {
@@ -183,11 +183,19 @@
           .attr('stroke', '#3333ff')
           .attr('marker-end', 'url(#arrow)')
         // 心跳
+        let heartLoop = 2000
         let lineHearts = chart.selectAll('.relHeart').data(data.rel)
         lineHearts.enter().append('circle').attr('class', 'relHeart')
           .attr('fill', '#0000ff')
           .attr('r', 2)
-        let heartLoop = 2000
+          .attr('opacity', 0.5)
+          .attr('cx', d => d.x1)
+          .attr('cy', d => d.y1)
+          .transition()
+          .duration(heartLoop)
+          .attr('cx', d => d.x2)
+          .attr('cy', d => d.y2)
+          .attr('opacity', 1)
         d3.interval(() => {
           chart.selectAll('.relHeart')
             .attr('opacity', 0.5)
@@ -211,7 +219,7 @@
 </script>
 
 <style>
-  .asset {
+  image.asset {
     cursor: pointer;
   }
 
