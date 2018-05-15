@@ -27,6 +27,7 @@
             </template>
             <Menu-item name="3-1">柱状图</Menu-item>
             <Menu-item name="3-2">折线图</Menu-item>
+            <Menu-item name="3-3">测试</Menu-item>
           </Submenu>
         </Menu>
       </i-col>

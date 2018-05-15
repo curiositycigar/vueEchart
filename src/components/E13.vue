@@ -21,48 +21,31 @@
       }
     },
     mounted() {
-      let ss = new this.Sort(this.data, (data) => {
-        this.options = this.getOptions(data)
+      let dataBuffer = []
+      this.sort(this.data, (data, j) => {
+        dataBuffer.push(data)
       })
+      let a = this.data
       this.interval = setInterval(() => {
-        if (!ss.next()) {
+        a = dataBuffer.shift()
+        if (a === undefined) {
           clearInterval(this.interval)
+        } else {
+          this.options = this.getOptions(a)
         }
-      }, 300)
+      }, 200)
     },
     beforeRouteLeave(from, to, next) {
       clearInterval(this.interval)
       next()
     },
     methods: {
-      Sort(data, cb) {
-        let i = 1
-        let l = data.length
-        let j = l - 1
-        this.next = function () {
-          console.log('next')
-          if (j >= l - i) {
-            i++
-            j = 0
-          } else if (j < l - i) {
-            j++
-          }
-          while (j < l - i && data[j + 1] >= data[j]) {
-            j++
-          }
-          if (data[j + 1] < data[j]) {
-            [data[j + 1], data[j]] = [data[j], data[j + 1]]
-            cb(data)
-          }
-          return i < l
-        }
-      },
       sort(data, cb) {
-        for (let i = 0; i < data.length; i++) {
-          for (let j = 0; j < data.length - i; j++) {
-            cb(data)
+        for (let i = 1; i <= 10; i++) {
+          for (let j = 0; j < data.length - i + 1; j++) {
             if (data[j] > data[j + 1]) {
               [data[j + 1], data[j]] = [data[j], data[j + 1]]
+              cb(Object.assign([], data), j)
             }
           }
         }
