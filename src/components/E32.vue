@@ -42,10 +42,9 @@
       let chart = d3.select('#e32')
       chart.append('g')
       this.update(chart, data)
-//      this.update(chart, data.map(item => Object.assign({}, item, {value: Math.ceil(Math.random() * 6) + 1})))
-      d3.interval(() => {
-        this.update(chart, data.map(item => Object.assign({}, item, {value: (Math.random() * 6).toFixed(2) + 1})).slice(0, Math.floor(Math.random() * (data.length - 3)) + 3))
-      }, 1500)
+//      d3.interval(() => {
+//        this.update(chart, data.map(item => Object.assign({}, item, {value: (Math.random() * 6).toFixed(2) + 1})).slice(0, Math.floor(Math.random() * (data.length - 3)) + 3))
+//      }, 1500)
 
       let data2 = [3, 7, 9, 1, 4, 6, 8, 2, 5]
       let w = 700
@@ -60,9 +59,9 @@
         .attr('height', h)
         .attr('transform', 'translate(20,20)')
       this.updateLine(vis, data2, w, h)
-//      d3.interval(() => {
-//        this.updateLine(vis, [...new Array(Math.floor(Math.random() * 5) + 5)].map(() => Math.random() * 5), w, h)
-//      }, 1500)
+      d3.interval(() => {
+        this.updateLine(vis, [...new Array(Math.floor(Math.random() * 5) + 5)].map(() => Math.ceil(Math.random() * 5)), w, h)
+      }, 1500)
 
       window.d3 = d3
     },
@@ -71,20 +70,6 @@
 //        let max = d3.max(data2)
         let x = d3.scaleLinear().domain([0, data2.length - 1]).range([0, w])
         let y = d3.scaleLinear().domain([0, 11]).range([h, 0])
-        let path = vis.selectAll('path.line')
-          .data([data2])
-
-        path.enter().append('svg:path')
-          .attr('class', 'line')
-        path.exit().remove()
-
-        vis.selectAll('path.line')
-          .transition()
-          .attr('fill', 'rgba(0,0,0,0)')
-          .attr('stroke', '#000')
-          .attr('d', d3.line()
-            .x((d, i) => x(i))
-            .y(y))
 
         let yticks = vis.selectAll('.ticky')
           .data(y.ticks())
@@ -132,6 +117,21 @@
           .attr('text-anchor', 'end')
           .attr('dy', h + 16)
           .attr('dx', 2)
+
+        let path = vis.selectAll('path.line')
+          .data([data2])
+
+        path.enter().append('svg:path')
+          .attr('class', 'line')
+        path.exit().remove()
+
+        vis.selectAll('path.line')
+          .transition()
+          .attr('fill', 'none').style('stroke-width', '2')
+          .attr('stroke', '#000')
+          .attr('d', d3.line()
+            .x((d, i) => x(i))
+            .y(y))
 
         let point = vis.selectAll('.point').data(data2)
         point.enter().append('svg:circle')
