@@ -137,24 +137,6 @@
           item.cx = begin + item.index * assetDistence
           item.cy = swimHeight * (indexMap[item.type] - 0.5)
         })
-        // 绘制资产
-        let assets = chart.selectAll('.asset').data(data.boxes)
-        assets.enter().append('image')
-          .attr('class', 'asset')
-          .attr('xlink:href', d => `./static/img/asset${d.type}.svg`)
-          .attr('width', 50)
-          .attr('height', 50)
-          .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy)
-          .attr('transform', 'translate(-25, -25)')
-        // 绘制资产文本
-        let textes = chart.selectAll('.assetDes').data(data.boxes)
-        textes.enter().append('text')
-          .attr('class', 'assetDes')
-          .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy + 40)
-          .attr('text-anchor', 'middle')
-          .text(d => d.name)
         // 计算线条位置
         data.rel.map(d => {
           d.x1 = nodes[d.from].cx
@@ -173,6 +155,24 @@
           d.x2 -= dx
           d.y2 -= dy
         })
+        // 绘制资产
+        let assets = chart.selectAll('.asset').data(data.boxes)
+        assets.enter().append('image')
+          .attr('class', 'asset')
+          .attr('xlink:href', d => `./static/img/asset${d.type}.svg`)
+          .attr('width', 50)
+          .attr('height', 50)
+          .attr('x', (d) => d.cx)
+          .attr('y', (d) => d.cy)
+          .attr('transform', 'translate(-25, -25)')
+        // 绘制资产文本
+        let textes = chart.selectAll('.assetDes').data(data.boxes)
+        textes.enter().append('text')
+          .attr('class', 'assetDes')
+          .attr('x', (d) => d.cx)
+          .attr('y', (d) => d.cy + 40)
+          .attr('text-anchor', 'middle')
+          .text(d => d.name)
         // 绘制线条
         let lines = chart.selectAll('.rel').data(data.rel)
         lines.enter().append('line').attr('class', 'rel')
