@@ -24,6 +24,7 @@
           {id: '4', name: 'bs-1', type: 2},
           {id: '5', name: 'bs-2', type: 3},
           {id: '8', name: 'bs-8', type: 3},
+          {id: '41', name: 'bs-8', type: 4},
           {id: '6', name: 'bs-2', type: 5},
           {id: '7', name: 'bs-2', type: 5},
           {id: '9', name: 'bs-2', type: 5}
@@ -33,12 +34,12 @@
           {from: '1', to: '3', text: 'to'},
           {from: '1', to: '4', text: 'to'},
           {from: '2', to: '5', text: 'to'},
-          {from: '3', to: '4', text: 'to'},
           {from: '3', to: '5', text: 'to'},
           {from: '5', to: '6', text: 'to'},
           {from: '5', to: '7', text: 'to'},
-          {from: '2', to: '7', text: 'to'},
-          {from: '8', to: '7', text: 'to'}
+          {from: '8', to: '7', text: 'to'},
+          {from: '41', to: '9', text: 'to'},
+          {from: '7', to: '9', text: 'to'}
         ]
       }
 //      console.log(data)
