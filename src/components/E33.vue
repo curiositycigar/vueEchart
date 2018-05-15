@@ -141,7 +141,7 @@
         let assets = chart.selectAll('.asset').data(data.boxes)
         assets.enter().append('image')
           .attr('class', 'asset')
-          .attr('xlink:href', d => `/static/img/asset${d.type}.svg`)
+          .attr('xlink:href', d => `./static/img/asset${d.type}.svg`)
           .attr('width', 50)
           .attr('height', 50)
           .attr('x', (d) => d.cx)
