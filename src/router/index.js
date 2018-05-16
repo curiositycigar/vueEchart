@@ -9,6 +9,7 @@ import E22 from '@/components/E22'
 import E31 from '@/components/E31'
 import E32 from '@/components/E32'
 import E33 from '@/components/E33'
+import E34 from '@/components/E34'
 
 Vue.use(Router)
 
@@ -57,6 +58,11 @@ export default new Router({
       path: '/3-3',
       name: '3-3',
       component: E33
+    },
+    {
+      path: '/3-4',
+      name: '3-4',
+      component: E34
     },
     {
       path: '*',
