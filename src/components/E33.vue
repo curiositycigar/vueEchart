@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <svg id="bs"></svg>
+  <div class="businessEffectSvgWrapper-e33"
+       style="width: 100%; height: calc(100vh - 130px); border: solid 1px #000;overflow: hidden">
+    <svg id="bs" class="businessEffectSvg"></svg>
   </div>
 </template>
 
@@ -42,11 +43,10 @@
           {from: '7', to: '9', text: 'to'}
         ]
       }
-//      console.log(data)
       let field = d3.select('#bs')
       field.append('g')
+      // Arrow
       let defs = field.append('defs')
-
       let arrowMarker = defs.append('marker')
         .attr('id', 'arrow')
         .attr('markerUnits', 'strokeWidth')
@@ -60,11 +60,11 @@
       arrowMarker.append('path')
         .attr('d', 'M2,2 L10,6 L2,10 L6,6 L2,2')
         .attr('fill', '#3333ff')
-      this.draw(field, data, document.querySelector('#bs').parentNode.offsetWidth)
+      this.draw(field, data, 800, document.querySelector('#bs').parentNode.offsetHeight - 20)
       window.d3 = d3
     },
     methods: {
-      draw(field, data, w = 600, margin = 40) {
+      draw(field, data, w = 600, height, margin = 40) {
         let boxes = [
           {name: '超能勇士', type: 1},
           {name: '龙珠', type: 2},
@@ -83,32 +83,10 @@
           4: 4,
           5: 5
         }
-        let swimHeight = 200
+        let swimHeight = height / boxes.length
         let width = w - margin
-        let height = boxes.length * swimHeight
-        let chart = field.attr('width', w)
-          .attr('height', height + margin).select('g')
-        chart.attr('width', width)
-          .attr('height', height)
-          .attr('transform', `translate(${margin / 2}, ${margin / 2})`)
-        // 绘制swim
-        chart.selectAll('.swimLine').data(boxes).enter()
-          .append('line')
-          .attr('class', 'swimLine')
-          .attr('x1', 0)
-          .attr('y1', (d, i) => swimHeight * indexMap[d.type])
-          .attr('x2', width)
-          .attr('y2', (d, i) => swimHeight * indexMap[d.type])
-          .style('stroke', '#000')
-        // 绘制swim文本
-        chart.selectAll('.swimName').data(boxes).enter()
-          .append('text')
-          .attr('class', 'swimName')
-          .attr('x', 0)
-          .attr('y', (d, i) => swimHeight * (indexMap[d.type] - 0.5))
-          .text(d => d.name)
-          .style('font-size', '20px')
-          .attr('fill', '#3333ff')
+        // 图高
+//        let height = boxes.length * swimHeight
         // 计算资产位置...
         let lengths = {}
         let maxAssetsLength = 0
@@ -137,24 +115,6 @@
           item.cx = begin + item.index * assetDistence
           item.cy = swimHeight * (indexMap[item.type] - 0.5)
         })
-        // 绘制资产
-        let assets = chart.selectAll('.asset').data(data.boxes)
-        assets.enter().append('image')
-          .attr('class', 'asset')
-          .attr('xlink:href', d => `./static/img/asset${d.type}.svg`)
-          .attr('width', 50)
-          .attr('height', 50)
-          .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy)
-          .attr('transform', 'translate(-25, -25)')
-        // 绘制资产文本
-        let textes = chart.selectAll('.assetDes').data(data.boxes)
-        textes.enter().append('text')
-          .attr('class', 'assetDes')
-          .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy + 40)
-          .attr('text-anchor', 'middle')
-          .text(d => d.name)
         // 计算线条位置
         data.rel.map(d => {
           d.x1 = nodes[d.from].cx
@@ -173,6 +133,48 @@
           d.x2 -= dx
           d.y2 -= dy
         })
+        // 绘制chart尺寸
+        let chart = field.attr('width', w)
+          .attr('height', height + margin).select('g')
+        chart.attr('width', width)
+          .attr('height', height)
+          .attr('transform', `translate(${margin / 2}, ${margin / 2})`)
+        // 绘制swim
+        chart.selectAll('.swimLine').data(boxes).enter()
+          .append('line')
+          .attr('class', 'swimLine')
+          .attr('x1', 0)
+          .attr('y1', (d, i) => swimHeight * indexMap[d.type])
+          .attr('x2', width)
+          .attr('y2', (d, i) => swimHeight * indexMap[d.type])
+          .style('stroke', '#000')
+        // 绘制swim文本
+        chart.selectAll('.swimName').data(boxes).enter()
+          .append('text')
+          .attr('class', 'swimName')
+          .attr('x', 0)
+          .attr('y', (d, i) => swimHeight * (indexMap[d.type] - 0.5))
+          .text(d => d.name)
+          .style('font-size', '20px')
+          .attr('fill', '#3333ff')
+        // 绘制资产
+        let assets = chart.selectAll('.asset').data(data.boxes)
+        assets.enter().append('image')
+          .attr('class', 'asset')
+          .attr('xlink:href', d => `./static/img/asset${d.type}.svg`)
+          .attr('width', 50)
+          .attr('height', 50)
+          .attr('x', (d) => d.cx)
+          .attr('y', (d) => d.cy)
+          .attr('transform', 'translate(-25, -25)')
+        // 绘制资产文本
+        let textes = chart.selectAll('.assetDes').data(data.boxes)
+        textes.enter().append('text')
+          .attr('class', 'assetDes')
+          .attr('x', (d) => d.cx)
+          .attr('y', (d) => d.cy + 40)
+          .attr('text-anchor', 'middle')
+          .text(d => d.name)
         // 绘制线条
         let lines = chart.selectAll('.rel').data(data.rel)
         lines.enter().append('line').attr('class', 'rel')
@@ -219,61 +221,22 @@
 </script>
 
 <style>
-  image.asset {
+  .businessEffectSvgWrapper-e33 {
+    position: relative;
+  }
+
+  .businessEffectSvgWrapper-e33 .businessEffectSvg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: move;
+  }
+
+  .businessEffectSvgWrapper-e33 .businessEffectSvg image.asset {
     cursor: pointer;
   }
 
-  #e32 rect {
-    transition: all .3s;
-    fill: steelblue;
-  }
-
-  #e32 rect:hover {
-    fill: #0000ff;
-  }
-
-  #e32 text {
-    fill: white;
-    font: 10px sans-serif;
-    text-anchor: end;
-  }
-
-  #e32 .axis text {
-    font: 10px sans-serif;
-    fill: #000;
-  }
-
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-
-  #e321 text {
-    font: bold 48px monospace;
-  }
-
-  #e321 .enter {
-    fill: green;
-  }
-
-  #e321 .update {
-    fill: #333;
-  }
-
-  #e321 .exit {
-    fill: brown;
-  }
-
-  circle.point {
-    fill: #fff;
-    stroke: #000;
-    transition: all .2s;
-    cursor: pointer;
-  }
-
-  circle.point:hover {
-    stroke-width: 3px;
+  .businessEffectSvgWrapper-e33 .businessEffectSvg text {
+    cursor: text;
   }
 </style>
