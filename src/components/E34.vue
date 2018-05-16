@@ -236,18 +236,34 @@
           node.assetDesDom
             .attr('x', x)
             .attr('y', y + 33)
-          node.from.map(item => {
-            let {node, text} = item
-            let x2 = parseInt(node.attr('x2'))
-            let y2 = parseInt(node.attr('y2'))
-            let {x1, y1, mx, my} = getMx(x, y, x2, y2)
-            node
-              .attr('x1', x1)
-              .attr('y1', y1)
-            text
-              .attr('x', mx)
-              .attr('y', my)
-          })
+          if (node.from) {
+            node.from.map(item => {
+              let {node, text} = item
+              let x2 = parseInt(node.attr('x2'))
+              let y2 = parseInt(node.attr('y2'))
+              let {x1, y1, mx, my} = getMx(x, y, x2, y2)
+              node
+                .attr('x1', x1)
+                .attr('y1', y1)
+              text
+                .attr('x', mx)
+                .attr('y', my)
+            })
+          }
+          if (node.to) {
+            node.to.map(item => {
+              let {node, text} = item
+              let x1 = parseInt(node.attr('x1'))
+              let y1 = parseInt(node.attr('y1'))
+              let {x2, y2, mx, my} = getMx(x1, y1, x, y, true)
+              node
+                .attr('x2', x2)
+                .attr('y2', y2)
+              text
+                .attr('x', mx)
+                .attr('y', my)
+            })
+          }
         })
         function getMx(x1, y1, x2, y2, to) {
           let dx = x2 - x1
