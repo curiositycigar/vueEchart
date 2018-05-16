@@ -42,7 +42,6 @@
             {id: '33', name: '龟仙人1', type: 2},
             {id: '34', name: '龟仙人1', type: 2},
             {id: '35', name: '龟仙人1', type: 2},
-            {id: '36', name: '龟仙人1', type: 2},
             {id: '4', name: '比克大魔王', type: 2},
             {id: '5', name: '汤姆', type: 3},
             {id: '8', name: '杰瑞', type: 3},

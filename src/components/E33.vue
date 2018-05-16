@@ -1,6 +1,6 @@
 <template>
   <div class="businessEffectSvgWrapper-e33"
-       style="width: 300px; height: calc(100vh - 130px); border: solid 1px #000;overflow: hidden">
+       style="width: 100%; height: calc(100vh - 130px); border: solid 1px #000;overflow: hidden">
     <svg id="bs" class="businessEffectSvg"></svg>
   </div>
 </template>
@@ -43,20 +43,7 @@
           {from: '7', to: '9', text: 'to'}
         ]
       }
-//      console.log(data)
-      let x = 0
-      let y = 0
-      let drag = d3.drag()
-      drag.on('start', function () {
-        x = d3.event.x + Math.abs(parseInt(d3.select(this).style('left')))
-        y = d3.event.y + Math.abs(parseInt(d3.select(this).style('top')))
-        console.log(x, y)
-      })
-      drag.on('drag', function () {
-        d3.select(this)
-          .style('left', d3.event.x - x)
-      })
-      let field = d3.select('#bs').call(drag)
+      let field = d3.select('#bs')
       field.append('g')
       // Arrow
       let defs = field.append('defs')
@@ -240,7 +227,7 @@
 
   .businessEffectSvgWrapper-e33 .businessEffectSvg {
     position: absolute;
-    left: -100px;
+    left: 0;
     top: 0;
     cursor: move;
   }
