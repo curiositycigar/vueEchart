@@ -364,6 +364,7 @@
   }
 
   .businessEffectSvg text.relDes {
+    text-anchor: middle;
     cursor: text;
     fill: #6f75ff;
   }
