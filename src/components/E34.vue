@@ -40,8 +40,6 @@
             {id: '31', name: '龟仙人1', type: 2},
             {id: '32', name: '龟仙人1', type: 2},
             {id: '33', name: '龟仙人1', type: 2},
-            {id: '34', name: '龟仙人1', type: 2},
-            {id: '35', name: '龟仙人1', type: 2},
             {id: '4', name: '比克大魔王', type: 2},
             {id: '5', name: '汤姆', type: 3},
             {id: '8', name: '杰瑞', type: 3},
@@ -127,8 +125,9 @@
           item.cx = begin + item.index * assetDistence
           item.cy = swimHeight * (indexMap[item.type] - 0.5)
         })
+        // 资产图标大小
+        let assetRound = 40
         // 计算线条位置
-        let assetRound = 50
         data.rel.map(d => {
           d.x1 = nodes[d.from].cx
           d.y1 = nodes[d.from].cy
