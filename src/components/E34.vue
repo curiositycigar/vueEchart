@@ -183,8 +183,8 @@
         let chart = field.attr('width', w)
           .attr('height', height + margin).select('g')
         chart.attr('width', width)
-          .attr('height', height)
-          .attr('transform', `translate(${margin / 2}, ${margin / 2})`)
+          .attr('height', height + margin)
+          .attr('transform', `translate(${margin / 2}, 0)`)
         // 绘制swim
         let swim = chart.selectAll('.swimLine').data(boxes)
         swim.enter()
@@ -296,6 +296,8 @@
         let lines = chart.selectAll('.rel').data(data.rel)
         lines.enter().append('line')
           .attr('class', 'rel')
+          .attr('stroke-dashoffset', (d, i) => i % 2 === 0 ? 200 : '')
+          .attr('stroke', (d, i) => i % 2 !== 0 ? '#f00' : '#3333ff')
         chart.selectAll('.rel')
           .each(function (d, i) {
             // 把线条加入资产
@@ -347,6 +349,7 @@
   .businessEffectSvg line.swimLine {
     stroke: #4ce9ff;
   }
+
   .businessEffectSvg image.asset {
     cursor: pointer;
   }
@@ -357,7 +360,6 @@
   }
 
   .businessEffectSvg line.rel {
-    stroke: #3333ff;
     stroke-dasharray: 5, 5;
   }
 
@@ -367,7 +369,6 @@
   }
 
   .businessEffectSvg line.rel {
-    stroke-dashoffset: 100;
     animation: dash 5s linear infinite;
   }
 
