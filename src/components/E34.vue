@@ -128,6 +128,7 @@
           item.cy = swimHeight * (indexMap[item.type] - 0.5)
         })
         // 计算线条位置
+        let assetRound = 50
         data.rel.map(d => {
           d.x1 = nodes[d.from].cx
           d.y1 = nodes[d.from].cy
@@ -135,18 +136,18 @@
           d.y2 = nodes[d.to].cy
           let dx = d.x2 - d.x1
           let dy = d.y2 - d.y1
-          let ab = 40 / Math.sqrt(dx * dx + dy * dy)
+          let ab = (assetRound / 2 + 5) / Math.sqrt(dx * dx + dy * dy)
           d.dx = dx * ab
           d.dy = dy * ab
         })
         return {
-          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes
+          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes, assetRound
         }
       },
       draw(field, options) {
         /* ----------数据部分---------- */
         let {
-          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes
+          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes, assetRound
         } = options
         /* ----------页面拖动部分,仅拖动x轴---------- */
         // 记录当前页面最小left
@@ -243,7 +244,7 @@
           // 仅y轴拖动
           let dx = x2 - x1
           let dy = oy2 - oy1
-          let ab = 40 / Math.sqrt(dx * dx + dy * dy)
+          let ab = (assetRound / 2 + 5) / Math.sqrt(dx * dx + dy * dy)
           dx *= ab
           dy *= ab
           return {
@@ -274,8 +275,8 @@
           .each(function (d) {
             d.assetDom = d3.select(this)
           })
-          .attr('width', 50)
-          .attr('height', 50)
+          .attr('width', assetRound)
+          .attr('height', assetRound)
           .attr('x', (d) => d.cx)
           .attr('y', (d) => d.cy)
           .attr('transform', 'translate(-25, -25)')
@@ -289,14 +290,14 @@
             d.assetDesDom = d3.select(this)
           })
           .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy + 33)
+          .attr('y', (d) => d.cy + assetRound / 2 + 8)
           .attr('text-anchor', 'middle')
           .text(d => d.name)
         // 绘制线条
         let lines = chart.selectAll('.rel').data(data.rel)
         lines.enter().append('line')
           .attr('class', 'rel')
-          .attr('stroke-dashoffset', (d, i) => i % 2 === 0 ? 200 : '')
+          .attr('stroke-dashoffset', (d, i) => i % 2 === 0 ? 200 : 0)
           .attr('stroke', (d, i) => i % 2 !== 0 ? '#f00' : '#3333ff')
         chart.selectAll('.rel')
           .each(function (d, i) {
