@@ -40,8 +40,6 @@
             {id: '31', name: '龟仙人1', type: 2},
             {id: '32', name: '龟仙人1', type: 2},
             {id: '33', name: '龟仙人1', type: 2},
-            {id: '34', name: '龟仙人1', type: 2},
-            {id: '35', name: '龟仙人1', type: 2},
             {id: '4', name: '比克大魔王', type: 2},
             {id: '5', name: '汤姆', type: 3},
             {id: '8', name: '杰瑞', type: 3},
@@ -82,14 +80,7 @@
     },
     methods: {
       makeData(data, w = 600, height, margin = 40) {
-        let boxes = [
-          {name: '超能勇士', type: 1},
-          {name: '龙珠', type: 2},
-          {name: '猫和老鼠', type: 3},
-          {name: '水浒传', type: 4},
-          {name: '西游记', type: 5},
-          {name: '其他', type: 6}
-        ]
+        let boxes = this.swims
         let nodes = {}
         data.boxes.map(item => {
           nodes[item.id] = item
@@ -128,54 +119,43 @@
         // 左侧空出距离
         let leftTextWidth = 0
         // 中心距离
-        console.log('containerWidth', w, containerWidth)
         let computedFieldMiddle = leftTextWidth + (containerWidth - leftTextWidth) / 2
-        console.log('computedFieldMiddle', computedFieldMiddle)
         data.boxes.map(item => {
-          console.log('lengths[item.type]', assetDistence * (lengths[item.type] + 1) / 2)
           let begin = computedFieldMiddle - assetDistence * (lengths[item.type] + 1) / 2
-          console.log('item.index * assetDistence', item.index * assetDistence)
           item.cx = begin + item.index * assetDistence
           item.cy = swimHeight * (indexMap[item.type] - 0.5)
         })
+        // 资产图标大小
+        let assetRound = 40
         // 计算线条位置
         data.rel.map(d => {
           d.x1 = nodes[d.from].cx
           d.y1 = nodes[d.from].cy
           d.x2 = nodes[d.to].cx
           d.y2 = nodes[d.to].cy
-          d.mx = (d.x2 + d.x1) / 2
-          d.my = (d.y2 + d.y1) / 2
           let dx = d.x2 - d.x1
           let dy = d.y2 - d.y1
-          let ab = 40 / Math.sqrt(dx * dx + dy * dy)
-          dx *= ab
-          dy *= ab
-          d.x1 += dx
-          d.y1 += dy
-          d.x2 -= dx
-          d.y2 -= dy
+          let ab = (assetRound / 2 + 5) / Math.sqrt(dx * dx + dy * dy)
+          d.dx = dx * ab
+          d.dy = dy * ab
         })
         return {
-          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes
+          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes, assetRound
         }
       },
       draw(field, options) {
         /* ----------数据部分---------- */
         let {
-          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes
+          data, boxes, swimHeight, w, width, height, margin, indexMap, nodes, assetRound
         } = options
-        /* ----------页面拖动部分---------- */
+        /* ----------页面拖动部分,仅拖动x轴---------- */
         // 记录当前页面最小left
         let minLeft = document.querySelector('.businessEffectSvgWrapper').offsetWidth - w
-        console.log(minLeft)
         // 记录当前页面位置
         let x = 0
-        // let y = 0
         let drag = d3.drag()
         drag.on('start', function () {
           x = d3.event.x + Math.abs(parseInt(d3.select(this).style('left')))
-          // y = d3.event.y + Math.abs(parseInt(d3.select(this).style('top')))
         })
         drag.on('drag', function () {
           let left = d3.event.x - x
@@ -203,8 +183,8 @@
         let chart = field.attr('width', w)
           .attr('height', height + margin).select('g')
         chart.attr('width', width)
-          .attr('height', height)
-          .attr('transform', `translate(${margin / 2}, ${margin / 2})`)
+          .attr('height', height + margin)
+          .attr('transform', `translate(${margin / 2}, 0)`)
         // 绘制swim
         let swim = chart.selectAll('.swimLine').data(boxes)
         swim.enter()
@@ -214,74 +194,75 @@
           .attr('y1', (d, i) => swimHeight * indexMap[d.type])
           .attr('x2', width)
           .attr('y2', (d, i) => swimHeight * indexMap[d.type])
-//        // 绘制swim文本
-//        let swimText = chart.selectAll('.swimName').data(boxes)
-//        swimText.enter()
-//          .append('text')
-//          .attr('class', 'swimName')
-//        chart.selectAll('.swimName').attr('x', 0)
-//          .attr('y', (d, i) => swimHeight * (indexMap[d.type] - 0.5))
-//          .text(d => d.name)
-//          .style('font-size', '20px')
-//          .attr('fill', '#3333ff')
         // 资产拖拽
         let assetGrag = d3.drag()
         assetGrag.on('drag', function () {
           let {x, y} = d3.event
+          x = x < 30 ? 30 : x > width - 30 ? width - 30 : x
           let node = nodes[d3.select(this).attr('node-id')]
           node.assetDom
             .attr('x', x)
-            .attr('y', y)
+//            .attr('y', y)
           node.assetDesDom
             .attr('x', x)
-            .attr('y', y + 33)
+//            .attr('y', y + 33)
           if (node.from) {
             node.from.map(item => {
               let {node, text} = item
-              let x2 = parseInt(node.attr('x2'))
-              let y2 = parseInt(node.attr('y2'))
-              let {x1, y1, mx, my} = getMx(x, y, x2, y2)
+              let {x2, y2, y1} = item.data
+              let data = getMx(x, y, x2, y2, y1, y2)
+              Object.assign(item.data, data)
               node
-                .attr('x1', x1)
-                .attr('y1', y1)
+                .attr('x1', data.x1 + data.dx)
+                .attr('y1', data.y1 + data.dy)
+                .attr('x2', data.x2 - data.dx)
+                .attr('y2', data.y2 - data.dy)
               text
-                .attr('x', mx)
-                .attr('y', my)
+                .attr('x', (data.x2 + data.x1) / 2)
+                .attr('y', (data.y1 + data.y2) / 2)
             })
           }
           if (node.to) {
             node.to.map(item => {
               let {node, text} = item
-              let x1 = parseInt(node.attr('x1'))
-              let y1 = parseInt(node.attr('y1'))
-              let {x2, y2, mx, my} = getMx(x1, y1, x, y, true)
+              let {x1, y1, y2} = item.data
+              let data = getMx(x1, y1, x, y, y1, y2)
+              Object.assign(item.data, data)
               node
-                .attr('x2', x2)
-                .attr('y2', y2)
+                .attr('x1', data.x1 + data.dx)
+                .attr('y1', data.y1 + data.dy)
+                .attr('x2', data.x2 - data.dx)
+                .attr('y2', data.y2 - data.dy)
               text
-                .attr('x', mx)
-                .attr('y', my)
+                .attr('x', (data.x2 + data.x1) / 2)
+                .attr('y', (data.y1 + data.y2) / 2)
             })
           }
         })
-        function getMx(x1, y1, x2, y2, to) {
+        function getMx(x1, y1, x2, y2, oy1, oy2) {
+          // 仅y轴拖动
           let dx = x2 - x1
-          let dy = y2 - y1
-          let ab = 39 / Math.sqrt(dx * dx + dy * dy)
+          let dy = oy2 - oy1
+          let ab = (assetRound / 2 + 5) / Math.sqrt(dx * dx + dy * dy)
           dx *= ab
           dy *= ab
-          if (to) {
-            x2 -= dx
-            y2 -= dy
-          } else {
-            x1 += dx
-            y1 += dy
-          }
-          let mx = (x2 + x1) / 2
-          let my = (y2 + y1) / 2
           return {
-            x1, y1, x2, y2, mx, my
+            x1,
+            y1: oy1,
+            x2,
+            y2: oy2,
+            dx,
+            dy
           }
+//          // 全部轴拖动
+//          let dx = x2 - x1
+//          let dy = y2 - y1
+//          let ab = 40 / Math.sqrt(dx * dx + dy * dy)
+//          dx *= ab
+//          dy *= ab
+//          return {
+//            x1, y1, x2, y2, dx, dy
+//          }
         }
 
         // 绘制资产
@@ -293,11 +274,12 @@
           .each(function (d) {
             d.assetDom = d3.select(this)
           })
-          .attr('width', 50)
-          .attr('height', 50)
+          .attr('width', assetRound)
+          .attr('height', assetRound)
           .attr('x', (d) => d.cx)
           .attr('y', (d) => d.cy)
-          .attr('transform', 'translate(-25, -25)').call(assetGrag)
+          .attr('transform', 'translate(-25, -25)')
+          .call(assetGrag)
         // 绘制资产文本
         let textes = chart.selectAll('.assetDes').data(data.boxes)
         textes.enter().append('text')
@@ -307,72 +289,46 @@
             d.assetDesDom = d3.select(this)
           })
           .attr('x', (d) => d.cx)
-          .attr('y', (d) => d.cy + 33)
+          .attr('y', (d) => d.cy + assetRound / 2 + 8)
           .attr('text-anchor', 'middle')
           .text(d => d.name)
         // 绘制线条
         let lines = chart.selectAll('.rel').data(data.rel)
         lines.enter().append('line')
           .attr('class', 'rel')
+          .attr('stroke-dashoffset', (d, i) => i % 2 === 0 ? 200 : 0)
+          .attr('stroke', (d, i) => i % 2 !== 0 ? '#f00' : '#3333ff')
         chart.selectAll('.rel')
           .each(function (d, i) {
             // 把线条加入资产
             if (!nodes[d.from].from) {
               nodes[d.from].from = []
             }
-            nodes[d.from].from[i] = {}
-            nodes[d.from].from[i].node = d3.select(this)
-
             if (!nodes[d.to].to) {
               nodes[d.to].to = []
             }
-            nodes[d.to].to[i] = {}
-            nodes[d.to].to[i].node = d3.select(this)
+            nodes[d.from].from[i] = nodes[d.to].to[i] = {}
+            nodes[d.from].from[i].node = nodes[d.to].to[i].node = d3.select(this)
+            nodes[d.from].from[i].data = nodes[d.to].to[i].data = d
           })
-          .attr('x1', d => d.x1)
-          .attr('y1', d => d.y1)
-          .attr('x2', d => d.x2)
-          .attr('y2', d => d.y2)
+          .attr('x1', d => d.x1 + d.dx)
+          .attr('y1', d => d.y1 + d.dy)
+          .attr('x2', d => d.x2 - d.dx)
+          .attr('y2', d => d.y2 - d.dy)
           .attr('marker-end', 'url(#arrow)')
         // 绘制线条文本
         let lineTextes = chart.selectAll('.relDes').data(data.rel)
         lineTextes.enter().append('text')
           .attr('class', 'relDes')
-        chart.selectAll('.relDes').attr('x', d => d.mx)
+        chart.selectAll('.relDes')
           .each(function (d, i) {
-            // 把线条加入资产
+            // 把线条文本加入资产
             nodes[d.from].from[i].text = d3.select(this)
             nodes[d.to].to[i].text = d3.select(this)
           })
-          .attr('y', d => d.my)
+          .attr('x', d => (d.x2 + d.x1) / 2)
+          .attr('y', d => (d.y2 + d.y1) / 2)
           .text(d => d.text)
-        // 心跳
-//        let heartLoop = 2000
-//        let lineHearts = chart.selectAll('.relHeart').data(data.rel)
-//        lineHearts.enter().append('circle')
-//          .attr('class', 'relHeart')
-//        chart.selectAll('.relHeart')
-//          .attr('fill', '#0000ff')
-//          .attr('r', 2)
-//          .attr('opacity', 0.5)
-//          .attr('cx', d => d.x1)
-//          .attr('cy', d => d.y1)
-//          .transition()
-//          .duration(heartLoop)
-//          .attr('cx', d => d.x2)
-//          .attr('cy', d => d.y2)
-//          .attr('opacity', 1)
-//        d3.interval(() => {
-//          chart.selectAll('.relHeart')
-//            .attr('opacity', 0.5)
-//            .attr('cx', d => d.x1)
-//            .attr('cy', d => d.y1)
-//            .transition()
-//            .duration(heartLoop)
-//            .attr('cx', d => d.x2)
-//            .attr('cy', d => d.y2)
-//            .attr('opacity', 1)
-//        }, heartLoop + 200)
       }
     }
   }
@@ -394,17 +350,32 @@
     stroke: #4ce9ff;
   }
 
-  .businessEffectSvg line.rel {
-    stroke: #3333ff;
-    stroke-dasharray: 5, 5;
-  }
-
   .businessEffectSvg image.asset {
     cursor: pointer;
   }
 
-  .businessEffectSvg text {
+  .businessEffectSvg text.assetDes {
     cursor: text;
     fill: #6f75ff;
+  }
+
+  .businessEffectSvg line.rel {
+    stroke-dasharray: 5, 5;
+  }
+
+  .businessEffectSvg text.relDes {
+    text-anchor: middle;
+    cursor: text;
+    fill: #6f75ff;
+  }
+
+  .businessEffectSvg line.rel {
+    animation: dash 5s linear infinite;
+  }
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
   }
 </style>
